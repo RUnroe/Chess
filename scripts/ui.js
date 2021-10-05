@@ -22,6 +22,7 @@ CHESSAPP.ui = (function(){
 	chatWindow = null,
 	chatInput= null,
 	online= false,
+	mode = "traditional", //can be traditional or chess960
 	preferredColor= "W",
 	chatActive= false,
 	initSub= null,//subscriber to the initial
@@ -187,10 +188,10 @@ CHESSAPP.ui = (function(){
 		initial.className = "initial overscreen";  
 
 		h2.appendChild(document.createTextNode("Choose your mode"));
-		a.setAttribute("data-mode", "offline"); 
-		a.appendChild(document.createTextNode("Offline Play"));       
-		a2.setAttribute("data-mode", "online");    
-		a2.appendChild(document.createTextNode("Online Play"));    
+		a.setAttribute("data-mode", "traditional"); 
+		a.appendChild(document.createTextNode("Traditional"));       
+		a2.setAttribute("data-mode", "chess960");    
+		a2.appendChild(document.createTextNode("Chess 960"));    
 
 		frag.appendChild(h2);
 		frag.appendChild(a);
@@ -242,7 +243,7 @@ CHESSAPP.ui = (function(){
 		else{
 			deactivateChat();
 		}
-		initSub.apply(window, [{color: preferredColor, online: online}]);
+		initSub.apply(window, [{color: preferredColor, online: online, mode: mode}]);
 	};
 
 	
@@ -435,12 +436,9 @@ CHESSAPP.ui = (function(){
 		if(src.nodeName.toLowerCase() == "a"){
 			//get the color
 			var val = src.getAttribute("data-mode");
-			if(val == "offline"){
-				online = false;
-			}
-			else if(val == "online"){
-				online = true;
-			}
+			online = false;
+			//set the game mode to the selected mode
+			mode = val;
 		}
 		if(online){
 			//show preferredClicked

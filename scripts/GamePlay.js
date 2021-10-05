@@ -227,7 +227,7 @@ that.init = function(userSettings){
 		} 
 		else{
 			CHESSAPP.ui.statusUpdate({type: "fb", msg: "Playing locally"});
-			that.setUpBoard();
+			that.setUpBoard(pref.mode);
 		}
 	});
 
@@ -242,110 +242,188 @@ that.lock = function(stg){
 
 };
 
-that.setUpBoard = function(){
+that.setUpBoard = function(mode){
 	if(that.pieces){
 		//reset pieces
 		delete that.pieces;
 	}
-	//create pieces
-	that.pieces = [
-	{
+	if(mode === "chess960") {
+		that.pieces = [];
+		let row = ["", "", "", "", "", "", "", ""]; // first row of pieces;
+		//Add bishops to row
+		row[Math.floor(Math.random() * 4) * 2 + 1] = "bishop"; //random odd position in row
+		row[Math.floor(Math.random() * 4) * 2] = "bishop"; //random even position in row
+
+		//Add king to row (must have at least 1 open space on either side)
+		let availableKingPositions = [];
+		for(let i = 1; i < row.length; i++) {
+			let isLeftOpen = false, isRightOpen = false;
+			//check all positions left of observed position
+			for(let j = i-1; j === 0; j--) {
+				if(row[j] === "") {
+					isLeftOpen = true;
+					break;
+				} 
+			}
+			//check all positions right of observed position
+			for(let j = i+1; j < row.length; j++) {
+				if(row[j] === "") {
+					isRightOpen = true;
+					break;
+				} 
+			}
+			if(isLeftOpen && isRightOpen) {
+				availableKingPositions.push(i);
+				console.log("availableKingPos", i);
+			}
+		}
+		let kingPosition = availableKingPositions[Math.floor(Math.random() * availableKingPositions.length-1)];
+		console.log(row, kingPosition);
+		row[kingPosition] = "king";
+		console.log(row);
+
+		//Add rooks around king
+		//Left side rook
+		let availableLeftRookPositions = [];
+		for(let i = 0; i < kingPosition; i++) {
+			if(row[i] === "") availableLeftRookPositions.push(i);
+		}
+		row[availableLeftRookPositions[Math.floor(Math.random() * availableLeftRookPositions-1)]] = "rook";
+		
+		//Right side rook
+		let availableRightRookPositions = [];
+		for(let i = kingPosition+1; i < row.length; i++) {
+			if(row[i] === "") availableRightRookPositions.push(i);
+		}
+		row[availableRightRookPositions[Math.floor(Math.random() * availableRightRookPositions-1)]] = "rook";
+
+
+		//randomize knights and queen
+
+		let remainingOpenPositions = [];
+		row.forEach((position, index) => {
+			if(position === "") remainingOpenPositions.push(index);
+		});
+
+		let queenPositionIndex = Math.floor(Math.random() * remainingOpenPositions.length-1);
+		let queenPosition = remainingOpenPositions[queenPositionIndex];
+		row[queenPosition] = "queen";
+		remainingOpenPositions.splice(queenPositionIndex, 1); //remove from remaining open positions since queen occupies that space
+		
+		//Add knights
+		remainingOpenPositions.forEach(position => {
+			row[position] = "knight";
+		});
+
+		console.log(row);
+
+
+		//translate row into pieces array for both black and white side
+
+	}
+	else {
+		//create pieces
+		that.pieces = [
+		{
+				x: 0,
+				y: 0,
+				color: 'B',
+				pieceType: "rook"
+		},
+		{
 			x: 0,
+			y: 7,
+			color: 'W',
+			pieceType: "rook"
+		},
+		{
+			x: 7,
 			y: 0,
 			color: 'B',
 			pieceType: "rook"
-	},
-	{
-		x: 0,
-		y: 7,
-		color: 'W',
-		pieceType: "rook"
-	},
-	{
-		x: 7,
-		y: 0,
-		color: 'B',
-		pieceType: "rook"
-	},
-	{
-		x: 7,
-		y: 7,
-		color: 'W',
-		pieceType: "rook"
-	},
-	{
-		x: 4,
-		y: 7,
-		color: 'W',
-		pieceType: "king"
-	},
-	{
-		x: 4,
-		y: 0,
-		color: 'B',
-		pieceType: "king"
-	},
-	{
-		x: 6,
-		y: 0,
-		color: 'B',
-		pieceType: "knight"
-	},
-	{
-		x: 1,
-		y: 0,
-		color: 'B',
-		pieceType: "knight"
-	},
-	{
-		x: 6,
-		y: 7,
-		color: 'W',
-		pieceType: "knight"
-	},
-	{
-		x: 1,
-		y: 7,
-		color: 'W',
-		pieceType: "knight"
-	},
-	{
-		x: 5,
-		y: 0,
-		color: 'B',
-		pieceType: "bishop"
-	},
-	{
-		x: 2,
-		y: 0,
-		color: 'B',
-		pieceType: "bishop"
-	},
-	{
-		x: 5,
-		y: 7,
-		color: 'W',
-		pieceType: "bishop"
-	},
-	{
-		x: 2,
-		y: 7,
-		color: 'W',
-		pieceType: "bishop"
-	},
-	{
-		x: 3,
-		y: 0,
-		color: 'B',
-		pieceType: "queen"
-	},	
-	{
-		x: 3,
-		y: 7,
-		color: 'W',
-		pieceType: "queen"
+		},
+		{
+			x: 7,
+			y: 7,
+			color: 'W',
+			pieceType: "rook"
+		},
+		{
+			x: 4,
+			y: 7,
+			color: 'W',
+			pieceType: "king"
+		},
+		{
+			x: 4,
+			y: 0,
+			color: 'B',
+			pieceType: "king"
+		},
+		{
+			x: 6,
+			y: 0,
+			color: 'B',
+			pieceType: "knight"
+		},
+		{
+			x: 1,
+			y: 0,
+			color: 'B',
+			pieceType: "knight"
+		},
+		{
+			x: 6,
+			y: 7,
+			color: 'W',
+			pieceType: "knight"
+		},
+		{
+			x: 1,
+			y: 7,
+			color: 'W',
+			pieceType: "knight"
+		},
+		{
+			x: 5,
+			y: 0,
+			color: 'B',
+			pieceType: "bishop"
+		},
+		{
+			x: 2,
+			y: 0,
+			color: 'B',
+			pieceType: "bishop"
+		},
+		{
+			x: 5,
+			y: 7,
+			color: 'W',
+			pieceType: "bishop"
+		},
+		{
+			x: 2,
+			y: 7,
+			color: 'W',
+			pieceType: "bishop"
+		},
+		{
+			x: 3,
+			y: 0,
+			color: 'B',
+			pieceType: "queen"
+		},	
+		{
+			x: 3,
+			y: 7,
+			color: 'W',
+			pieceType: "queen"
+		}
+		];
+
 	}
-	];
+	
 	//add pawns
 	for(var p = 0; p < 8; p++)
 	{
