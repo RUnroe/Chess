@@ -256,10 +256,11 @@ that.setUpBoard = function(mode){
 
 		//Add king to row (must have at least 1 open space on either side)
 		let availableKingPositions = [];
-		for(let i = 1; i < row.length; i++) {
+		for(let i = 1; i < row.length -1; i++) {
+			if(row[i] !== "") continue;
 			let isLeftOpen = false, isRightOpen = false;
 			//check all positions left of observed position
-			for(let j = i-1; j === 0; j--) {
+			for(let j = i-1; j > 0; j--) {
 				if(row[j] === "") {
 					isLeftOpen = true;
 					break;
@@ -274,11 +275,9 @@ that.setUpBoard = function(mode){
 			}
 			if(isLeftOpen && isRightOpen) {
 				availableKingPositions.push(i);
-				console.log("availableKingPos", i);
 			}
 		}
-		let kingPosition = availableKingPositions[Math.floor(Math.random() * availableKingPositions.length-1)];
-		console.log(row, kingPosition);
+		let kingPosition = availableKingPositions[Math.floor(Math.random() * availableKingPositions.length)];
 		row[kingPosition] = "king";
 		console.log(row);
 
@@ -288,14 +287,17 @@ that.setUpBoard = function(mode){
 		for(let i = 0; i < kingPosition; i++) {
 			if(row[i] === "") availableLeftRookPositions.push(i);
 		}
-		row[availableLeftRookPositions[Math.floor(Math.random() * availableLeftRookPositions-1)]] = "rook";
+		console.log(availableLeftRookPositions);
+		row[availableLeftRookPositions[Math.floor(Math.random() * availableLeftRookPositions.length)]] = "rook";
 		
 		//Right side rook
 		let availableRightRookPositions = [];
 		for(let i = kingPosition+1; i < row.length; i++) {
 			if(row[i] === "") availableRightRookPositions.push(i);
 		}
-		row[availableRightRookPositions[Math.floor(Math.random() * availableRightRookPositions-1)]] = "rook";
+		console.log(availableRightRookPositions);
+
+		row[availableRightRookPositions[Math.floor(Math.random() * availableRightRookPositions.length)]] = "rook";
 
 
 		//randomize knights and queen
@@ -305,7 +307,7 @@ that.setUpBoard = function(mode){
 			if(position === "") remainingOpenPositions.push(index);
 		});
 
-		let queenPositionIndex = Math.floor(Math.random() * remainingOpenPositions.length-1);
+		let queenPositionIndex = Math.floor(Math.random() * remainingOpenPositions.length);
 		let queenPosition = remainingOpenPositions[queenPositionIndex];
 		row[queenPosition] = "queen";
 		remainingOpenPositions.splice(queenPositionIndex, 1); //remove from remaining open positions since queen occupies that space
