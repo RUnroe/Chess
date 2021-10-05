@@ -319,9 +319,24 @@ that.setUpBoard = function(mode){
 
 		console.log(row);
 
-
 		//translate row into pieces array for both black and white side
-
+		row.forEach((pieceType, index) => {
+			const newWhitePiece = {
+				x: index,
+				y: 7,
+				color: 'W',
+				pieceType
+			}
+			const newBlackPiece = {
+				x: index,
+				y: 0,
+				color: 'B',
+				pieceType
+			}
+			
+			that.pieces.push(newWhitePiece);
+			that.pieces.push(newBlackPiece);
+		});
 	}
 	else {
 		//create pieces
