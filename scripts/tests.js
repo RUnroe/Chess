@@ -28,14 +28,21 @@ try {
 
 
 //TEST 2: King inbetween rooks
+//get pieces from board
 let leftWRook, rightWRook, wKing;
 CHESSAPP.GamePlay.pieces.forEach(piece => {
-    
+    if(piece.pieceType === "king" && piece.y === 7) wKing = piece;
+});
+CHESSAPP.GamePlay.pieces.forEach(piece => {
+    if(piece.pieceType === "rook" && piece.y === 7) {
+        if(piece.x < wKing.x) leftWRook = piece;
+        else rightWRook = piece;
+    }
 });
 //Assert test
 try {
     document.getElementById("output").innerHTML +=(`King inbetween rooks: &nbsp;`);
-    unitjs.string("5");
+    unitjs.assert(leftWRook.x < wKing.x && wKing.x < rightWRook.x);
     document.getElementById("output").innerHTML += "<span style='color: #239937;'>Test Passed</span></br>";
 } catch(e) {
     document.getElementById("output").innerHTML += "<span style='color: #e64843;'>Test failed</span><br>";
