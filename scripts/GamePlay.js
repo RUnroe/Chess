@@ -115,6 +115,7 @@ that.switchTurn = function(){
 };
 
 that.pieceClicked = function(piece){ 
+	console.log(piece);
 	var color = piece.color;
 	//if the color does not match the current one playing, exit this function
 	if(color != _settings.turn){return;}
